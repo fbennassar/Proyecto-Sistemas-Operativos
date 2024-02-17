@@ -30,7 +30,10 @@ def cambiar_ruta():
     print("Cambiar Ruta")
 
 def abrir_archivos_manual():
-    print("Abrir Archivos")
+    print("Abrir Archivos manualmente")
+
+def ir_atras():
+    print("Ir Atras")
 
 # Frame es algo asi como un div en html
 button_frame = tk.Frame(app)
@@ -49,16 +52,25 @@ eliminar_button.pack(side='left', padx=10)
 mover_button = tk.Button(button_frame, text="Mover", command=mover)
 mover_button.pack(side='left', padx=10)
 
-cambiar_ruta_button = tk.Button(button_frame, text="Cambiar Ruta", command=cambiar_ruta)
-cambiar_ruta_button.pack(side='left', padx=10)
 
 # Etiqueta de la ruta
 # OJO debe ser la ruta de la carpeta que se va a explorar, esta ruta cambia en cada PC
 INITIALPATH = 'c:/Users/PC/Documents'
 path_label = tk.Label(app, text="Ruta: " + INITIALPATH , anchor='center', font=("Arial", 10), justify='center')
 path_label.pack(fill=tk.X, padx=10, pady=10)
-cambiar_ruta = tk.Entry(app)
-cambiar_ruta.pack(fill=tk.X, padx=10, pady=10)
+
+cambiar_ruta_frame = tk.Frame(app)
+cambiar_ruta_frame.pack(fill=tk.X, padx=10, pady=10)
+cambiar_ruta_label = tk.Label(cambiar_ruta_frame, text="Nueva Ruta:", font=("Arial", 10))
+cambiar_ruta_label.pack(side='left')
+cambiar_ruta_input = tk.Entry(cambiar_ruta_frame, width=50, font=("Arial", 10))
+cambiar_ruta_input.pack(side='left', padx=10)
+
+cambiar_ruta_button = tk.Button(cambiar_ruta_frame, text="Cambiar Ruta", command=ir_atras)
+cambiar_ruta_button.pack(side='left', padx=10)
+
+ir_atras_button = tk.Button(path_label, text="Ir Atras", command=cambiar_ruta)
+ir_atras_button.pack(side='left', padx=10)
 
 # Lista de los archivos
 listbox = tk.Listbox(app)
