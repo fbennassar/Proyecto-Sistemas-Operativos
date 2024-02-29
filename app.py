@@ -6,9 +6,14 @@ import os
 app = tk.Tk()
 app.geometry("800x600")
 app.title("Explorador de archivos")
+listbox = tk.Listbox(app)
+
+# pylint: disable=global-statement
+# pylint: disable=missing-function-docstring
 
 label = tk.Label(app, text="Explorador de archivos", anchor='center', font=("Arial", 20), justify='center')
 label.pack(fill=tk.X, padx=10, pady=10)
+actual_path = 'c:/Users/franb/OneDrive/Documents'
 
 # Comandos de los botones
 def crear():
@@ -24,16 +29,62 @@ def mover():
     print("Mover")
 
 def abrir_archivos(event):
-    print("Abrir Archivos")
+    global actual_path
+    seleccionado = listbox.get(listbox.curselection())
+    ruta_completa = os.path.join(actual_path, seleccionado)
+    if os.path.isfile(ruta_completa):
+        os.startfile(ruta_completa)
+    elif os.path.isdir(ruta_completa):
+        actual_path = ruta_completa
+        path_label.config(text="Ruta: " + actual_path)
+        files_and_dirs = os.listdir(actual_path)
+        listbox.delete(0, 'end')
+        for item in files_and_dirs:
+            listbox.insert('end', item)
+
+listbox.bind('<Double-Button-1>', abrir_archivos)
 
 def cambiar_ruta():
-    print("Cambiar Ruta")
+    global actual_path
+    global files_and_dirs
+    nueva_ruta = cambiar_ruta_input.get()
+    if os.path.exists(nueva_ruta):
+        actual_path = nueva_ruta
+        path_label.config(text="Ruta: " + actual_path)
+        files_and_dirs = os.listdir(actual_path)
+        listbox.delete(0, 'end')
+        for files in files_and_dirs:
+            listbox.insert('end', files)
+    else:
+        print("La ruta no existe")
 
 def abrir_archivos_manual():
-    print("Abrir Archivos manualmente")
+    global actual_path
+    seleccionado = file_path.get()
+    ruta_completa = os.path.join(actual_path, seleccionado)
+    if os.path.isfile(ruta_completa):
+        os.startfile(ruta_completa)
+    elif os.path.isdir(ruta_completa):
+        actual_path = ruta_completa
+        path_label.config(text="Ruta: " + actual_path)
+        files_and_dirs = os.listdir(actual_path)
+        listbox.delete(0, 'end')
+        for item in files_and_dirs:
+            listbox.insert('end', item)
 
 def ir_atras():
-    print("Ir Atras")
+    global actual_path
+    global files_and_dirs
+    ultimo_slash = actual_path.rfind('/')
+    if ultimo_slash != -1:
+        actual_path = actual_path[:ultimo_slash]
+        path_label.config(text="Ruta: " + actual_path)
+        files_and_dirs = os.listdir(actual_path)
+        listbox.delete(0, 'end')
+        for item in files_and_dirs:
+            listbox.insert('end', item)
+    else:
+        print("Ya estás en la raíz")
 
 # Frame es algo asi como un div en html
 button_frame = tk.Frame(app)
@@ -55,8 +106,8 @@ mover_button.pack(side='left', padx=10)
 
 # Etiqueta de la ruta
 # OJO debe ser la ruta de la carpeta que se va a explorar, esta ruta cambia en cada PC
-INITIALPATH = 'c:/Users/PC/Documents'
-path_label = tk.Label(app, text="Ruta: " + INITIALPATH , anchor='center', font=("Arial", 10), justify='center')
+
+path_label = tk.Label(app, text="Ruta: " + actual_path , anchor='center', font=("Arial", 10), justify='center')
 path_label.pack(fill=tk.X, padx=10, pady=10)
 
 cambiar_ruta_frame = tk.Frame(app)
@@ -66,18 +117,18 @@ cambiar_ruta_label.pack(side='left')
 cambiar_ruta_input = tk.Entry(cambiar_ruta_frame, width=50, font=("Arial", 10))
 cambiar_ruta_input.pack(side='left', padx=10)
 
-cambiar_ruta_button = tk.Button(cambiar_ruta_frame, text="Cambiar Ruta", command=ir_atras)
+cambiar_ruta_button = tk.Button(cambiar_ruta_frame, text="Cambiar Ruta", command=cambiar_ruta)
 cambiar_ruta_button.pack(side='left', padx=10)
 
-ir_atras_button = tk.Button(path_label, text="Ir Atras", command=cambiar_ruta)
+ir_atras_button = tk.Button(path_label, text="Ir Atras", command=ir_atras)
 ir_atras_button.pack(side='left', padx=10)
 
 # Lista de los archivos
-listbox = tk.Listbox(app)
+
 listbox.pack(fill='both', expand=True, padx=10)
 
 # Donde toma los archivos
-files_and_dirs = os.listdir('c:/Users/PC/Documents')
+files_and_dirs = os.listdir('c:/Users/franb/OneDrive/Documents')
 
 # Recorre todo el directorio y lo muestra en la lista
 for item in files_and_dirs:
