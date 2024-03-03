@@ -2,6 +2,7 @@
 
 import tkinter as tk
 import os
+import shutil
 
 app = tk.Tk()
 app.geometry("800x600")
@@ -13,17 +14,83 @@ listbox = tk.Listbox(app)
 
 label = tk.Label(app, text="Explorador de archivos", anchor='center', font=("Arial", 20), justify='center')
 label.pack(fill=tk.X, padx=10, pady=10)
-actual_path = 'c:/Users/franb/OneDrive/Documents'
+actual_path = 'c:\\Users\\franb\\OneDrive\\Documents'
 
 # Comandos de los botones
 def crear():
     print("Crear")
 
 def renombrar():
-    print("Renombrar")
+    # Crear una nueva ventana
+    rename_window = tk.Toplevel(app)
+    rename_window.title("Renombrar")
+    rename_window.geometry("300x250")
+
+
+    # Crear un Listbox para mostrar los archivos y carpetas
+    rename_listbox = tk.Listbox(rename_window)
+    rename_listbox.pack(fill=tk.X, padx=10, pady=10)
+
+    # Rellenar el Listbox con los archivos y carpetas actuales
+    files_and_dirs = os.listdir(actual_path)
+    for item in files_and_dirs:
+        rename_listbox.insert('end', item)
+
+    # Crear un campo de entrada para el nuevo nombre
+    new_name_entry = tk.Entry(rename_window)
+    new_name_entry.pack()
+
+    # Crear una función para renombrar el archivo o carpeta seleccionado
+    def rename_selected():
+        selected = rename_listbox.get(rename_listbox.curselection())
+        new_name = new_name_entry.get()
+        os.rename(os.path.join(actual_path, selected), os.path.join(actual_path, new_name))
+        # Actualizar el Listbox principal
+        listbox.delete(0, 'end')
+        files_and_dirs = os.listdir(actual_path)
+        for item in files_and_dirs:
+            listbox.insert('end', item)
+        # Cerrar la ventana de renombrar
+        rename_window.destroy()
+
+    # Crear un botón para renombrar el archivo o carpeta seleccionado
+    rename_button = tk.Button(rename_window, text="Renombrar", command=rename_selected)
+    rename_button.pack()
 
 def eliminar():
-    print("Eliminar")
+    # Crear una nueva ventana
+    delete_window = tk.Toplevel(app)
+    delete_window.title("Eliminar")
+    delete_window.geometry("300x250")
+
+    # Crear un Listbox para mostrar los archivos y carpetas
+    delete_listbox = tk.Listbox(delete_window)
+    delete_listbox.pack(fill=tk.X, padx=10, pady=10)
+
+    # Rellenar el Listbox con los archivos y carpetas actuales
+    files_and_dirs = os.listdir(actual_path)
+    for item in files_and_dirs:
+        delete_listbox.insert('end', item)
+
+    # Crear una función para eliminar el archivo o carpeta seleccionado
+    def delete_selected():
+        selected = delete_listbox.get(delete_listbox.curselection())
+        if os.path.isfile(os.path.join(actual_path, selected)):
+            os.remove(os.path.join(actual_path, selected))
+        else:
+            shutil.rmtree(os.path.join(actual_path, selected))
+        # Actualizar el Listbox principal
+        listbox.delete(0, 'end')
+        files_and_dirs = os.listdir(actual_path)
+        for item in files_and_dirs:
+            listbox.insert('end', item)
+        # Cerrar la ventana de eliminar
+        delete_window.destroy()
+
+    # Crear un botón para eliminar el archivo o carpeta seleccionado
+    delete_button = tk.Button(delete_window, text="Eliminar", command=delete_selected)
+    delete_button.pack()
+
 
 def mover():
     print("Mover")
@@ -75,7 +142,7 @@ def abrir_archivos_manual():
 def ir_atras():
     global actual_path
     global files_and_dirs
-    ultimo_slash = actual_path.rfind('/')
+    ultimo_slash = actual_path.rfind('\\')
     if ultimo_slash != -1:
         actual_path = actual_path[:ultimo_slash]
         path_label.config(text="Ruta: " + actual_path)
