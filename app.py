@@ -18,7 +18,59 @@ actual_path = 'c:\\Users\\franb\\OneDrive\\Documents'
 
 # Comandos de los botones
 def crear():
-    print("Crear")
+    # Crear una nueva ventana
+    create_window = tk.Toplevel(app)
+    create_window.title("Crear")
+    create_window.geometry("300x250")
+
+    # Crear un campo de entrada para el nombre del nuevo archivo/carpeta
+    new_name_entry = tk.Entry(create_window)
+    new_name_entry.pack()
+
+    # Crear una función para crear el nuevo archivo o carpeta
+    def create_new_folder():
+        new_name = new_name_entry.get()
+        new_path = os.path.join(actual_path, new_name)
+        if not os.path.exists(new_path):
+            # Aquí puedes decidir si quieres crear un archivo o una carpeta
+            # Para crear una carpeta:
+            os.mkdir(new_path)
+            # Para crear un archivo:
+            # open(new_path, 'a').close()
+            # Actualizar el Listbox principal
+            listbox.delete(0, 'end')
+            files_and_dirs = os.listdir(actual_path)
+            for item in files_and_dirs:
+                listbox.insert('end', item)
+            # Cerrar la ventana de crear
+            create_window.destroy()
+        else:
+            print("El archivo o carpeta ya existe")
+
+    def create_new_file():
+        new_name = new_name_entry.get()
+        new_path = os.path.join(actual_path, new_name)
+        if not os.path.exists(new_path):
+            # Aquí puedes decidir si quieres crear un archivo o una carpeta
+            # Para crear una carpeta:
+            # os.mkdir(new_path)
+            # Para crear un archivo:
+            open(new_path, 'a').close()
+            # Actualizar el Listbox principal
+            listbox.delete(0, 'end')
+            files_and_dirs = os.listdir(actual_path)
+            for item in files_and_dirs:
+                listbox.insert('end', item)
+            # Cerrar la ventana de crear
+            create_window.destroy()
+        else:
+            print("El archivo o carpeta ya existe")
+    # Crear un botón para crear el nuevo archivo o carpeta
+    create_folder_button = tk.Button(create_window, text="Crear Carpeta", command=create_new_folder)
+    create_folder_button.pack()
+
+    create_file_button = tk.Button(create_window, text="Crear Archivo", command=create_new_file)
+    create_file_button.pack()
 
 def renombrar():
     # Crear una nueva ventana
